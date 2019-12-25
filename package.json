@@ -1,0 +1,51 @@
+{
+  "name": "@icfm/trust",
+  "version": "0.1.0",
+  "description": "Commonly used functionalities wrapper",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fandisus/node_trust.git"
+  },
+  "keywords": [
+    "NodeJS",
+    "Electron",
+    "Database",
+    "PostgreSQL",
+    "MySQL"
+  ],
+  "author": "Fandi Susanto",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fandisus/node_trust/issues"
+  },
+  "homepage": "https://github.com/fandisus/node_trust#readme",
+  "dependencies": {
+    "fs-extra": "^8.1.0",
+    "lodash": "^4.17.15",
+    "mysql": "^2.17.1",
+    "pg": "^7.15.1",
+    "pg-format": "^1.0.4"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^8.0.1",
+    "@types/jest": "^24.0.24",
+    "@types/lodash": "^4.14.149",
+    "@types/mysql": "^2.15.8",
+    "@types/node": "^13.1.0",
+    "@types/pg": "^7.14.0",
+    "@types/pg-format": "^1.0.0",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.2.0",
+    "typescript": "^3.7.4"
+  },
+  "comments": [
+    "@types/node so that tsc does not say can not find module crypto",
+    "!tsconfig.json noImplicitAny IS SET TO FALSE"
+  ]
+}

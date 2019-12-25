@@ -8,12 +8,12 @@
 or
 
 	const Crypter = require('@icfm/trust').Crypter;
-##Setting encryption algorithm
+## Setting encryption algorithm
 	Crypter.setAlgorithm('aes-256-ctr');
 
 The algorithms available are the same with nodejs `crypto` module. But I couldn't find the complete list. Default algorithm set is `aes192`. Other available is `aes-256-ctr`. I couldn't find list of algorithm available. And some different algorithm need different way to implement.
 
-##Encrypting
+## Encrypting
 
 ```javascript
 Crypter.setKey('Some Secret Key');
@@ -26,7 +26,7 @@ Result:
 
 Failure to set an encryption key will throw error: `Encryption key must be set`.
 
-##Decrypting
+## Decrypting
 ```javascript
 Crypter.setKey('Some Secret Key');
 let enc = Crypter.encrypt('Something');
@@ -37,7 +37,7 @@ Result:
 
 	Something
 
-##Create SHA256 hash
+## Create SHA256 hash
 	const Crypter = require('@icfm/trust').Crypter;
 	let hash = Crypter.sha256('Some secret');
 	console.log(hash);

@@ -19,7 +19,7 @@ class MySQLDB {
   }
   public nq(s:string) { return this.connection.escape(s); }
   public nqq(s:string) { return `'${this.connection.escape(s)}'`; }
-  public async exec(sql:string, params:any[]):Promise<number> {
+  public async exec(sql:string, params:any[]=[]):Promise<number> {
     return new Promise((resolve, reject) => {
       this.connection.query(sql, params, (err, res, fields) => {
         if (err) { reject(err); return; }
@@ -27,7 +27,7 @@ class MySQLDB {
       });
     });
   }
-  public async insert(sql:string, params:any[]):Promise<number> {
+  public async insert(sql:string, params:any[]=[]):Promise<number> {
     return new Promise((resolve, reject) => {
       this.connection.query(sql, params, (err, res, fields) => {
         if (err) { reject (err); return; }
@@ -48,12 +48,13 @@ class MySQLDB {
     return new Promise((resolve, reject) => {
       this.connection.query(sql, params, (err, res, fields) => {
         if (err) { reject(err); return; }
+        if (res.rowCount === 0) resolve(undefined);
         // resolve(res[0][fields[0].name]);
         resolve(res[0][ Object.keys(res[0])[0] ]);
       });
     });
   }
-  public async rowExists(sql:string, params:any[]):Promise<boolean> {
+  public async rowExists(sql:string, params:any[]=[]):Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.connection.query(sql, params, (err, res, fields) => {
         if (err) { reject(err); return; }

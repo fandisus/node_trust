@@ -36,17 +36,17 @@ The `port` and `moreOptions` are optional. The `moreOptions` are actually option
 ## Methods
 #### setConnection
 ```javascript
-pgdb.setConnection(host, username, password, dbname, [port=5432], [options={}])
+pgdb.setConnection(host, username, password, dbname [, port=5432] [, options={}])
 ```
 Sets connection parameters of the pgdb object.
 
 #### exec (async)
 ```javascript
-pgdb.exec(DMLQuery, params)
+pgdb.exec(DMLQuery [, params])
 ```
 Return value: (int) number of rows affected.
 
-Tells the database to execute `DMLQuery`. `Params` are the parameters required by the query. Put empty array if no parameter are used.
+Tells the database to execute `DMLQuery`. `Params` are the parameters required by the query.
 
 Example:
 ```javascript
@@ -55,11 +55,11 @@ await pgdb.exec('INSERT INTO access_log (id, time, action) VALUES (DEFAULT, $1, 
 
 #### insert (async)
 ```javascript
-pgdb.insert(InsertQuery, params)
+pgdb.insert(InsertQuery [, params])
 ```
 Return value: (int) the value from RETURNING syntax.
 
-Tells the database to execute an insert query. `Params` are the parameters required by the query. Put empty array if no parameter are used. the `InsertQuery` must return an integer with `RETURNING someID` command. Otherwise, use `exec` instead.
+Tells the database to execute an insert query. `Params` are the parameters required by the query. The `InsertQuery` must return an integer with `RETURNING someID` command. Otherwise, use `exec` instead.
 
 Example:
 ```javascript
@@ -96,7 +96,7 @@ Note: the values array is something like this:
 
 #### getOneVal (async)
 ```javascript
-pgdb.getOneVal(query, params)
+pgdb.getOneVal(query [, params])
 ```
 Return value: (any) the result of the query (might be returned as string)
 
@@ -110,7 +110,7 @@ let phone = await pgdb.getOneVal('SELECT phone FROM users WHERE email=$1',[email
 
 #### getOneRow (async)
 ```javascript
-pgdb.getOneRow(query, params)
+pgdb.getOneRow(query [, params])
 ```
 Return value: (object) the result of the query. If no rows, returns undefined.
 
@@ -137,7 +137,7 @@ Result:
 
 #### get (async)
 ```javascript
-pgdb.get(query, params)
+pgdb.get(query [, params])
 ```
 Return value: (Array\<object>) array of objects representing the rows returned. Returns empty array when there's no rows.
 
@@ -160,7 +160,7 @@ Result:
 
 #### rowExists (async)
 ```javascript
-pgdb.rowExists(query, params)
+pgdb.rowExists(query [, params])
 ```
 Return value: (boolean)
 
@@ -197,5 +197,5 @@ var vals = [
   [4, 3, 'Bir Bintang', 5, 22000],
   [4, 4, 'Kit kat', 10, 50000],
 ];
-await pg.transExec(sqls, vals);
+await pgdb.transExec(sqls, vals);
 ```

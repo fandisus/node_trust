@@ -17,7 +17,7 @@ class PostgreDB {
     this.pool = new pg.Pool(options);
     // this.connection.on('error', err=>{ console.log('MySQL Connection error event fired');});
   }
-  public async exec(sql:string, params:any[]):Promise<number> {
+  public async exec(sql:string, params:any[]=[]):Promise<number> {
     return new Promise((resolve, reject) => {
       this.pool.query(sql, params, (err, res) => {
         if (err) { reject(err); return; }
@@ -25,7 +25,7 @@ class PostgreDB {
       });
     });
   }
-  public async insert(sql:string, params:any[]):Promise<number> { //SQL must have RETURNING id, and id column must DEFAULT
+  public async insert(sql:string, params:any[]=[]):Promise<number> { //SQL must have RETURNING id, and id column must DEFAULT
     return new Promise((resolve, reject) => {
       this.pool.query(sql, params, (err, res) => {
         if (err) { reject (err); return; }
@@ -53,7 +53,7 @@ class PostgreDB {
       });
     });
   }
-  public async rowExists(sql:string, params:any[]):Promise<boolean> {
+  public async rowExists(sql:string, params:any[]=[]):Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.pool.query(sql, params, (err, res) => {
         if (err) { reject(err); return; }

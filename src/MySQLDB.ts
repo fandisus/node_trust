@@ -3,7 +3,7 @@ import { Connection } from "mysql";
 var mysql = require('mysql');
 class MySQLDB {
   constructor() {
-    this.connection = mysql.createConnection({});
+    this.connection = mysql.createConnection();
   }
   public initialized:boolean = false;
   public connection:Connection;

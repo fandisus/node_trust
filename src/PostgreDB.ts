@@ -48,7 +48,8 @@ class PostgreDB {
     return new Promise((resolve, reject) => {
       this.pool.query(sql, params, (err, res) => {
         if (err) { reject(err); return; }
-        resolve(res.rows[0][res.fields[0].name]);
+        if (res.rowCount === 0) resolve(undefined);
+        else resolve(res.rows[0][res.fields[0].name]);
       });
     });
   }

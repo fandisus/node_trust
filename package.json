@@ -1,6 +1,6 @@
 {
   "name": "@icfm/trust",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Commonly used functionalities wrapper",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

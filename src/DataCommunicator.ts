@@ -57,6 +57,25 @@ class DataCommunicator<T extends Model> {
     else
       await DataCommunicator.pg.exec(sql, params);
   }
+  public async multiInsert(models: T[], batchSize:number=10000): Promise<void> {
+    //This method does not check PK collisions, and does no auto id assignments.
+    if (models.length === 0) throw new Error('No data to multi insert');
+    let props = Array.from(this.dbProps);
+    let columnsList = props.join(',');
+    let sql:string = `INSERT INTO ${this.tableName} (${columnsList}) VALUES %L`;
+    let idx=0;
+    while (idx < models.length) {
+      let nextIdx = idx+batchSize;
+      let batchRows:any[][] = models.slice(idx, nextIdx).map(m=>{
+        let row:any[] = [];
+        for(let p of props) row.push(m[p]);
+        return row;
+      });
+      await DataCommunicator.pg.multiInsert(sql, batchRows);
+      idx = nextIdx;
+    }
+  }
+
 
   public async checkPKForUpdate(model: T): Promise<void> {
     if (this.PK.length === 0) throw new Error('Can not update data without PK');

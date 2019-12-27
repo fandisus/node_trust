@@ -44,6 +44,19 @@ console.log('Inserted object: ', oSalesman);  //id should have been updated to n
 ```
 If the Model `hasSerial()` returns true, the id of the `oSalesman` object will be set to new id after insert.
 
+#### Inserting multiple object at once
+```javascript
+let items = [
+  new SalesDetail({sales_id:oSales.id, product:'item 1', price:100, qty:1, sub_total:100 }),
+  new SalesDetail({sales_id:oSales.id, product:'item 2', price:50, qty:4, sub_total:200 }),
+  new SalesDetail({sales_id:oSales.id, product:'item 3', price:150, qty:2, sub_total:300 }),
+  new SalesDetail({sales_id:oSales.id, product:'item 4', price:40, qty:10, sub_total:400 }),
+];
+let dcSalesDetail = new DataCommunicator(SalesDetail);
+await dcSalesDetail.multiInsert(items);
+```
+Note that this method does not check PK collisions, and does no auto id assignments.
+
 #### Updating data
 ```javascript
 //Find the data by id
@@ -356,7 +369,7 @@ let tester = async function() {
       new SalesDetail({sales_id:oSales.id, product:'item 4', price:40, qty:10, sub_total:400 }),
     ];
     let dcSalesDetail = new DataCommunicator(SalesDetail);
-    for (let item of items) await dcSalesDetail.insert(item);
+    await dcSalesDetail.multiInsert(items);
 
     //Show the data using raw query
     let data = await DataCommunicator.pg.get(`
@@ -384,5 +397,3 @@ If successful:
 - `createTable.js` will create salesman, sales and sales_detail tables in database.
 - `singleTable.js` will insert, update and delete data from the `salesman` table. While calling the data repeatedly in between.
 - `multiTable.js` will simulate inserting to multiple tables at once.
-
-`multiTable.js` operations still unsatisfactory though. Will add `multiInsert` method to `DataCommunicator` later. So multiple rows for one table can be executed all at once, without doing handshake operation multiple times.

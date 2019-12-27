@@ -18,12 +18,13 @@ There are two ways to set connection parameters. First is to set environment var
 ##### 1st way: Environment variables
 Install dotenv so we can put environment variables in .env file `npm i dotenv`
 Then create .env file in root folder:
-
-	  PGUSER=username
-    PGHOST=localhost
-    PGPASSWORD=secret
-    PGDATABASE=something
-    PGPORT=5432
+```
+PGUSER=username
+PGHOST=localhost
+PGPASSWORD=secret
+PGDATABASE=something
+PGPORT=5432
+```
 Then the pgdb object will always be ready to use.
 ##### 2nd way: setConnection method
 This method need to be called every time after creating new PostgreDB object if the pg environment variables are not set. Or when wanting to create different database connection.

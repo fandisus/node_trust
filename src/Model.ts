@@ -1,8 +1,6 @@
-﻿import PostgreDB from './PostgreDB';
-import * as _ from 'lodash';
+﻿import * as _ from 'lodash';
 
 abstract class Model {
-  protected static pg = new PostgreDB;
   public abstract tableName(): string;
   public abstract PK(): string[];
   public abstract hasSerial(): boolean;

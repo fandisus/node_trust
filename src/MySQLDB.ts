@@ -6,7 +6,7 @@ class MySQLDB {
     this.connection = mysql.createConnection();
   }
   public initialized:boolean = false;
-  public connection:Connection;
+  private connection:Connection;
   public setConnection(host:string, user:string, password:string, database:string, port:number=3306, timezone:string='local', options:any={}) {
     options.host = host;
     options.user = user;

@@ -19,7 +19,7 @@ There are two ways to set connection parameters. First is to set environment var
 Install dotenv so we can put environment variables in .env file `npm i dotenv`
 Then create .env file in root folder:
 
-	PGUSER=username
+	  PGUSER=username
     PGHOST=localhost
     PGPASSWORD=secret
     PGDATABASE=something

@@ -24,6 +24,7 @@ class DataCommunicator<T extends Model> {
   }
 
   public async checkPKForInsert(model: T): Promise<void> {
+    if (this.PK.length === 0) return;
     var sql: string = `SELECT * FROM ${this.tableName}`;
     this.resetFieldIndex();
     var conds: string[] = this.PK.map(pk => { return `${pk}=${this.nextFieldParam()}`; });
@@ -39,17 +40,17 @@ class DataCommunicator<T extends Model> {
     if (this.hasSerial && model[this.PK[0]] !== 0) {
       throw new Error(this.classOfModel.name + ' data seems not new');
     }
-    let props = this.dbProps;
-    var columnsList = props.map(p => { return p; }).join(',');
+    let props = Array.from(this.dbProps);
+    var columnsList = props.join(',');
 
     this.resetFieldIndex();
-    if (this.hasSerial) props.shift(); //Buang id
-    var paramsHolder: string = props.map(p => { return this.nextFieldParam(); }).join(',');
+    if (this.hasSerial) props.splice(props.indexOf(this.PK[0]),1); //Remove serial column
+    var paramsHolder: string = props.map(p => { return this.nextFieldParam(); }).join(','); //$1, $2, $3 so on
     if (this.hasSerial) paramsHolder = 'DEFAULT,' + paramsHolder;
 
     var sql: string = `INSERT INTO ${this.tableName} (${columnsList}) VALUES (${paramsHolder})`;
     if (this.hasSerial) sql += ` RETURNING ${this.PK[0]}`;
-    var params: any[] = props.map(p => { return model[p]; }); //Kalau hasSerial, sudah dibuang kolom id di atas
+    var params: any[] = props.map(p => { return model[p]; }); //SERIAL prop has been removed above.
 
     if (this.hasSerial)
       model[this.PK[0]] = await DataCommunicator.pg.insert(sql, params);
@@ -58,6 +59,7 @@ class DataCommunicator<T extends Model> {
   }
 
   public async checkPKForUpdate(model: T): Promise<void> {
+    if (this.PK.length === 0) throw new Error('Can not update data without PK');
     var sql: string = `SELECT * FROM ${this.tableName}`;
     this.resetFieldIndex();
     var filters:string[] = [];
@@ -84,7 +86,9 @@ class DataCommunicator<T extends Model> {
   }
   public async update(model: T, targets: string[] = [], ignores: string[] = []): Promise<void> {
     if (!this.hasSerial) this.checkPKForUpdate(model);
+    if (model._old === undefined) throw new Error('DataCommunicator unable to check for old values. Please use find to get data before update');
     var diff: object = Basics.getDiff(model._old, model);
+    for (var i in diff) { if (i.startsWith('_')) delete diff[i]; }
     if (Object.keys(diff).length === 0) throw new Error(`${this.tableName} data unchanged`);
 
     var updates: object = {};
@@ -112,6 +116,7 @@ class DataCommunicator<T extends Model> {
     await DataCommunicator.pg.exec(sql, params);
   }
   public async delete(model: T): Promise<void> {
+    if (this.PK.length === 0) throw new Error ('Can not delete data without PK');
     var sql: string = `DELETE FROM ${this.tableName} WHERE `;
     var pkFilters: string[] = [];
     var params: any[] = [];
@@ -121,8 +126,6 @@ class DataCommunicator<T extends Model> {
       params.push(model[p]);
     }
     sql += pkFilters.join(' AND ');
-    console.log(sql);
-    console.log(params);
     await DataCommunicator.pg.exec(sql, params);
   }
 

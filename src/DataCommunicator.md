@@ -89,7 +89,8 @@ Let's try to create a new project. First create an empty folder `tryTrust`. And 
 0. *If you havent installed typescript globally, run: `npm i typescript -g`
 1. `npm init -y`
 2. `npm i @icfm/trust dotenv faker`
-3. `tsc --init`
+3. `npm i @types/node -D`
+4. `tsc --init`
 
 Create an empty `test` database in your PostgreSQL database. And also create this .env file:
 ```

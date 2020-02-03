@@ -1,11 +1,11 @@
 # DataCommunicator
-Class for managing Business Models. **THIS CLASS HAS NOT BEEN TRIED WITH ANY PROJECT YET. USE AT YOUR OWN RISK.** Right now internally requires `PostgreDB` class. So **right now this class only supports for PostgreSQL** technology stack. Also this class was designed to be used with typescript.
+Class for managing Business Models. **THIS CLASS HAS NOT BEEN TRIED WITH ANY PROJECT YET. USE AT YOUR OWN RISK.** This class was designed to be used with typescript.
 
 ### Dependency
-- Internals: `Model`, `Basics`, `PostgreDB`
+- Internals: `Model`, `Basics`
 - External: `lodash`
 
-Designed to be used with the Model class. Right now internally requires `PostgreDB` class. So **right now this class only supports for PostgreSQL** technology stack.
+Designed to be used with the Model class.
 
 ### Usage
 #### Importing
@@ -16,15 +16,19 @@ import {DataCommunicator} from '@icfm/trust';
 #### Creating new object
 ```
 import {Model} from '@icfm/trust';
+import {PostgreDB} from '@icfm/trust';
+//OR import {MySQLDB} from '@icfm/trust';
 class User extends Model {
 	...
 }
 let dcUser = new DataCommunicator(User);
+DataCommunicator.db = new PostgreDB;
+//OR DataCommunicator.db = new MySQLDB;
 ```
 The `DataCommunicator` constructor accepts a class in its argument. The class must inherit from `Model`.
 
 #### Setting up database connection parameters
-`DataCommunicator` got a `pg` property which is a `PostgreDB` object. To setup the connection parameters, use environment variables, or `DataCommunicator.pg.setConnection` method. More detailed explanation [here](https://github.com/fandisus/node_trust/blob/master/src/PostgreDB.md "here").
+`DataCommunicator` got a `db` property which is either a `PostgreDB` object or `MySQLDB` object. To setup the connection parameters, use environment variables, or `DataCommunicator.db.setConnection` method. More detailed explanation about connection can be found in [PostgreDB](https://github.com/fandisus/node_trust/blob/master/src/PostgreDB.md "PostgreDB") or [MySQLDB](https://github.com/fandisus/node_trust/blob/master/src/MySQLDB.md "MySQLDB").
 
 #### Inserting new object
 ```javascript
@@ -196,6 +200,7 @@ class Salesman extends Model {
   }
   public static async findByUsername(username: string): Promise<Salesman | undefined> {
     let row =  await db.getOneRow('SELECT * FROM salesman WHERE username=$1',[username]);
+    //MySQL: let row =  await db.getOneRow('SELECT * FROM salesman WHERE username=?',[username]);
     if (row === undefined) return undefined;
     let obj = new Salesman(row);
     obj.fillOldVals(); //Create _old in object, so it will be updateable using DataCommunicator
@@ -252,7 +257,8 @@ export default SalesDetail;
 createTable.ts
 ```javascript
 require('dotenv').config();
-import {Files, PostgreDB} from '@icfm/trust';
+import {Files, PostgreDB, TableComposer} from '@icfm/trust';
+//MySQL: TableComposer.driver = 'mysql';
 let db = new PostgreDB;
 
 let createTables = async function() {
@@ -310,6 +316,7 @@ let tester = async function() {
     
     //Get data after update
     salesmans = await dcSalesman.allPlus(`WHERE biodata->>'name'=$1`,undefined,['Fandi']);
+    //MySQL: salesmans = await dcSalesman.allPlus(`WHERE biodata->>"$.name"=?`,undefined,['Fandi']);
     console.log('After update: ', salesmans[0]);
 
     //Delete the just created salesman

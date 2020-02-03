@@ -15,15 +15,15 @@ This module provide a class which wraps `mysql` methods into simpler APIs.
 #### Setting connection parameters
 Connection parameters MUST be set before trying to query the database.
 ```javascript
-//host, username, password, databaseName, port, timezone, moreOptions
-db.setConnection('localhost','username','password','dbname',3306, 'local', {});
+//host, username, password, databaseName, port, moreOptions
+db.setConnection('localhost','username','password','dbname',3306, {});
 ```
-The `port`, `timezone` and `moreOptions` are optional. The `moreOptions` are actually connection options for `mysql` which options can be read [here](https://www.npmjs.com/package/mysql#connection-options "here"). There's also explanation about timezone in the link.
+The `port`, and `moreOptions` are optional. The `moreOptions` are actually connection options for `mysql` which options can be read [here](https://www.npmjs.com/package/mysql#connection-options "here"). One of the options is `timezone` which defaults to `local`. More explanation about timezone in the link.
 
 ## Methods
 #### setConnection
 ```javascript
-db.setConnection(host, username, password, dbname [, port=3306] [, timezone='local'][, options={}])
+db.setConnection(host, username, password, dbname [, port=3306] [, options={}])
 ```
 Sets connection parameters of the db object.
 

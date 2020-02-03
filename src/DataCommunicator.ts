@@ -1,5 +1,4 @@
 ﻿import { Model } from "./Model";
-import PostgreDB from "./PostgreDB";
 import { Basics } from './Basics';
 import * as _ from "lodash";
 
@@ -8,7 +7,7 @@ class DataCommunicator<T extends Model> {
   protected PK: string[];
   protected hasSerial: boolean;
   public dbProps:string[];
-  public static pg: PostgreDB = new PostgreDB;
+  public static db: iDBAdapter;
   protected classOfModel: { new(): T };
 
   public static multiInsertBatchCount: number = 10000;
@@ -30,7 +29,7 @@ class DataCommunicator<T extends Model> {
     var conds: string[] = this.PK.map(pk => { return `${pk}=${this.nextFieldParam()}`; });
     sql += ` WHERE ${conds.join(' AND ')}`;
     var PKVals: any[] = this.PK.map(pk => { return model[pk]; });
-    var ada: boolean = await DataCommunicator.pg.rowExists(sql, PKVals);
+    var ada: boolean = await DataCommunicator.db.rowExists(sql, PKVals);
     if (!ada) return;
     throw new Error(`Duplicate PK for table ${this.tableName}`); //Testing pake jurus throw. Kalo ndak biso, dikonversi jadi resolve reject.
   }
@@ -49,20 +48,23 @@ class DataCommunicator<T extends Model> {
     if (this.hasSerial) paramsHolder = 'DEFAULT,' + paramsHolder;
 
     var sql: string = `INSERT INTO ${this.tableName} (${columnsList}) VALUES (${paramsHolder})`;
-    if (this.hasSerial) sql += ` RETURNING ${this.PK[0]}`;
+    if (this.hasSerial && DataCommunicator.db.dbEngine === 'postgresql') sql += ` RETURNING ${this.PK[0]}`;
+    
     var params: any[] = props.map(p => { return model[p]; }); //SERIAL prop has been removed above.
 
     if (this.hasSerial)
-      model[this.PK[0]] = await DataCommunicator.pg.insert(sql, params);
+      model[this.PK[0]] = await DataCommunicator.db.insert(sql, params);
     else
-      await DataCommunicator.pg.exec(sql, params);
+      await DataCommunicator.db.exec(sql, params);
   }
   public async multiInsert(models: T[], batchSize:number=10000): Promise<void> {
     //This method does not check PK collisions, and does no auto id assignments.
     if (models.length === 0) throw new Error('No data to multi insert');
     let props = Array.from(this.dbProps);
     let columnsList = props.join(',');
-    let sql:string = `INSERT INTO ${this.tableName} (${columnsList}) VALUES %L`;
+    let sql:string = (DataCommunicator.db.dbEngine==='mysql') 
+    ? `INSERT INTO ${this.tableName} (${columnsList}) VALUES ?`
+    : `INSERT INTO ${this.tableName} (${columnsList}) VALUES %L`;
     let idx=0;
     while (idx < models.length) {
       let nextIdx = idx+batchSize;
@@ -71,7 +73,7 @@ class DataCommunicator<T extends Model> {
         for(let p of props) row.push(m[p]);
         return row;
       });
-      await DataCommunicator.pg.multiInsert(sql, batchRows);
+      await DataCommunicator.db.multiInsert(sql, batchRows);
       idx = nextIdx;
     }
   }
@@ -90,7 +92,7 @@ class DataCommunicator<T extends Model> {
       params.push(model[pk]);
     }
     sql += ` WHERE ${filters.join(' AND ')}`;
-    var ada: boolean = await DataCommunicator.pg.rowExists(sql, params);
+    var ada: boolean = await DataCommunicator.db.rowExists(sql, params);
     if (!ada) return;
     throw new Error(`Duplicate PK for table ${this.tableName}`);
   }
@@ -132,7 +134,7 @@ class DataCommunicator<T extends Model> {
       params.push(model[p]);
     }
     sql += cols.join(', ') + ' WHERE ' + pkfilters.join(' AND ');
-    await DataCommunicator.pg.exec(sql, params);
+    await DataCommunicator.db.exec(sql, params);
   }
   public async delete(model: T): Promise<void> {
     if (this.PK.length === 0) throw new Error ('Can not delete data without PK');
@@ -145,7 +147,7 @@ class DataCommunicator<T extends Model> {
       params.push(model[p]);
     }
     sql += pkFilters.join(' AND ');
-    await DataCommunicator.pg.exec(sql, params);
+    await DataCommunicator.db.exec(sql, params);
   }
 
   public async find(PKs: any[], cols: string = '*'): Promise<T | undefined> {
@@ -153,7 +155,7 @@ class DataCommunicator<T extends Model> {
     this.resetFieldIndex();
     var conds: string[] = this.PK.map(s => { return `${s}=${this.nextFieldParam()}`; });
     sql += ` WHERE ${conds.join(' AND ')}`;
-    var dbres: any = await DataCommunicator.pg.getOneRow(sql, PKs);
+    var dbres: any = await DataCommunicator.db.getOneRow(sql, PKs);
     if (dbres === undefined) return undefined;
     var res: T = new this.classOfModel();
 
@@ -162,7 +164,7 @@ class DataCommunicator<T extends Model> {
     return res;
   }
   public async all(cols: string = '*'): Promise<T[]> {
-    var dbres: any = await DataCommunicator.pg.get(`SELECT ${cols} FROM ${this.tableName}`);
+    var dbres: any = await DataCommunicator.db.get(`SELECT ${cols} FROM ${this.tableName}`);
     var res: T[] = dbres.map(row => {
       var obj: T = new this.classOfModel();
       obj.cloneFrom(row);
@@ -171,7 +173,7 @@ class DataCommunicator<T extends Model> {
     return res;
   }
   public async allPlus(moreQuery:string, cols: string = '*', bindings:any[] = []): Promise<T[]> {
-    var dbres: any = await DataCommunicator.pg.get(`SELECT ${cols} FROM ${this.tableName} ${moreQuery}`, bindings);
+    var dbres: any = await DataCommunicator.db.get(`SELECT ${cols} FROM ${this.tableName} ${moreQuery}`, bindings);
     var res: T[] = dbres.map(row => {
       var obj: T = new this.classOfModel();
       obj.cloneFrom(row);
@@ -180,17 +182,18 @@ class DataCommunicator<T extends Model> {
     return res;
   }
   public async dbCount(): Promise<number> {
-    var dbres: number = +await DataCommunicator.pg.getOneVal(`SELECT COUNT(*) FROM ${this.tableName}`);
+    var dbres: number = +await DataCommunicator.db.getOneVal(`SELECT COUNT(*) FROM ${this.tableName}`);
     return dbres;
   }
   public async dbCountPlus(strWhere: string, bindings: any[] = []) {
-    var dbres: number = +await DataCommunicator.pg.getOneVal(`SELECT COUNT(*) FROM ${this.tableName} ${strWhere}`, bindings);
+    var dbres: number = +await DataCommunicator.db.getOneVal(`SELECT COUNT(*) FROM ${this.tableName} ${strWhere}`, bindings);
     return dbres;
   }
 
   private _fieldIndex: number = 0;
   private resetFieldIndex() { this._fieldIndex = 0; }
   private nextFieldParam(): string {
+    if (DataCommunicator.db.dbEngine === 'mysql') return '?';
     this._fieldIndex++;
     return `$${this._fieldIndex}`;
   }

@@ -1,9 +1,13 @@
 import pg from 'pg';
 import format from 'pg-format';
 
-class PostgreDB {
+class PostgreDB implements iDBAdapter {
+  public dbEngine: string = 'postgresql';
   constructor (){
     this.pool = new pg.Pool();
+  }
+  public closeConnection() {
+    this.pool.end();
   }
   public pool:any;
   public setConnection(host:string, user:string, password:string, database:string, port:number=5432, options:any={}) {

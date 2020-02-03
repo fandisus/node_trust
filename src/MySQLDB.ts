@@ -1,19 +1,23 @@
 import { Connection } from "mysql";
 
 var mysql = require('mysql');
-class MySQLDB {
+class MySQLDB implements iDBAdapter {
+  public dbEngine: string = 'mysql';
   constructor() {
-    this.connection = mysql.createConnection();
+    this.connection = mysql.createConnection({host:'localhost'});
   }
   public initialized:boolean = false;
   private connection:Connection;
-  public setConnection(host:string, user:string, password:string, database:string, port:number=3306, timezone:string='local', options:any={}) {
+  public closeConnection() {
+    this.connection.end();
+  }
+  public setConnection(host:string, user:string, password:string, database:string, port:number=3306, options:any={}) {
     options.host = host;
     options.user = user;
     options.password = password;
     options.database = database;
     options.port = port;
-    options.timezone = timezone;
+    options.timezone = options.timezone || 'local';
     this.connection = mysql.createConnection(options);
     this.connection.on('error', err=>{ console.log('MySQL Connection error event fired');});
   }

@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
+
 import { default as PostgreDB } from './PostgreDB';
 describe("PostgreDB Operations", ()=> {
   test("Should be able to create PostgreDB Object", ()=>{
@@ -21,9 +22,8 @@ describe("PostgreDB Operations", ()=> {
   test("Should be able to insert and get autoinc", async()=>{
     let db=new PostgreDB;
     let angka:number = await db.insert("INSERT INTO penduduk VALUES (DEFAULT, $1) RETURNING id",['Fandi']);
-    console.log("PK: ", angka);
     db.closeConnection();
-    expect(angka).toBeTruthy();
+    expect(angka).toBeGreaterThan(0);
   });
   test("Should be able to multiInsert", async()=>{
     let db=new PostgreDB;

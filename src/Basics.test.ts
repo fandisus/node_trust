@@ -1,5 +1,5 @@
 import { Basics } from './Basics';
-console.log(Basics.getDiff);
+
 describe("Basics getDiff(obj, obj)", ()=> {
   test("It should show updated properties", () => {
     let obj1 = {a:1, b:2, c:3};

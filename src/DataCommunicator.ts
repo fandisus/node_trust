@@ -163,6 +163,17 @@ class DataCommunicator<T extends Model> {
     res.fillOldVals();
     return res;
   }
+  public async findWhere(strWhere:string, cols: string='*', bindings:any[]): Promise<T | undefined> {
+    var sql: string = `SELECT ${cols} FROM ${this.tableName} ${strWhere}`;
+    var dbres: any = await DataCommunicator.db.getOneRow(sql, bindings);
+    if (dbres === undefined) return undefined;
+    var res: T = new this.classOfModel();
+
+    res.cloneFrom(dbres);
+    res.fillOldVals();
+    return res;
+  }
+
   public async all(cols: string = '*'): Promise<T[]> {
     var dbres: any = await DataCommunicator.db.get(`SELECT ${cols} FROM ${this.tableName}`);
     var res: T[] = dbres.map(row => {

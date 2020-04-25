@@ -315,9 +315,14 @@ let tester = async function() {
     //* Can only update data which was called using `find` method.
     
     //Get data after update
+    let oSalesman2:Salesman|undefined =
+        await dcSalesman.findWhere(`WHERE biodata->>"$.name"=?`,'*',['Fandi']);
+    console.log('After update: ', oSalesman2);
+
+    //Get data after update
     salesmans = await dcSalesman.allPlus(`WHERE biodata->>'name'=$1`,undefined,['Fandi']);
     //MySQL: salesmans = await dcSalesman.allPlus(`WHERE biodata->>"$.name"=?`,undefined,['Fandi']);
-    console.log('After update: ', salesmans[0]);
+    console.log('Get using array: ', salesmans);
 
     //Delete the just created salesman
     await dcSalesman.delete(oSalesman);

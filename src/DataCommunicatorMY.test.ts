@@ -51,7 +51,14 @@ describe("DataCommunicator Test", ()=> {
     expect(b?.author).toBe('Fandi');
     DataCommunicator.db.closeConnection();
   });
-  test("Should be able to find Where", async() =>{
+  test("Should be able to findWhere", async() =>{
+    DataCommunicator.db = new MySQLDB;
+    DataCommunicator.db.setConnection(host, user, password,schema, port);
+    let book:Book|undefined = await dcBook.findWhere('WHERE publish_year=?',undefined,[2010]);
+    expect(book?.title).toBe('icodeformoney');
+    DataCommunicator.db.closeConnection();
+  });
+  test("Should be able to get allPlus", async() =>{
     DataCommunicator.db = new MySQLDB;
     DataCommunicator.db.setConnection(host, user, password,schema, port);
     let books:Book[] = await dcBook.allPlus('WHERE publish_year=?','*',[2010]);

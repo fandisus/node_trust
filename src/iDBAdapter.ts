@@ -11,3 +11,4 @@ interface iDBAdapter{
   getOneRow(sql:string, params?:any[]):Promise<any>;
   transExec(sqls:string[],params:any[][]):Promise<any>
 }
+export default iDBAdapter;

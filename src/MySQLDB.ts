@@ -1,4 +1,5 @@
 import { Connection } from "mysql";
+import iDBAdapter from "./iDBAdapter";
 
 var mysql = require('mysql');
 class MySQLDB implements iDBAdapter {

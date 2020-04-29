@@ -1,6 +1,7 @@
 ﻿import { Model } from "./Model";
 import { Basics } from './Basics';
 import * as _ from "lodash";
+import iDBAdapter from "./iDBAdapter";
 
 class DataCommunicator<T extends Model> {
   protected tableName: string; //Ndak perlu underscore, karena ini DataCommunicator

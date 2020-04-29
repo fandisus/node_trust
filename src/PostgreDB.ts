@@ -1,5 +1,6 @@
 import pg from 'pg';
 import format from 'pg-format';
+import iDBAdapter from './iDBAdapter';
 
 class PostgreDB implements iDBAdapter {
   public dbEngine: string = 'postgresql';

@@ -111,8 +111,8 @@ class TableComposer {
     var col = this.lastCol;
     ////props format: [{name:'name',type:'INT/VARCHAR(45)',path:'$.location.name'}]
     for (let p of props) {
-      this.columns.push(`${col}_${p.name} ${p.type} AS ${col}->>"${p.path}"`);
-      this.indexes.push(`CREATE INDEX idx_${col}_${p.name}_${this.tableName} ON ${this.tableName} (${col}_${p.name})`);
+      this.columns.push(`${col}_${p.name} ${p.type} AS (${col}->>"${p.path})"`);
+      this.indexes.push(`CREATE INDEX idx_${col}_${p.name}_${this.tableName} ON ${this.tableName} (${col}_${p.name});`);
     }
     return this;
   }

@@ -40,18 +40,25 @@ class DataCommunicator<T extends Model> {
     if (this.hasSerial && model[this.PK[0]] !== 0) {
       throw new Error(this.classOfModel.name + ' data seems not new');
     }
+    //columnsList: cola, colb, colc, etc
     let props = Array.from(this.dbProps);
     var columnsList = props.join(',');
 
+    //paramsHolder: $1, $2, $3 etc. OR ?, ?, ? etc.
     this.resetFieldIndex();
     if (this.hasSerial) props.splice(props.indexOf(this.PK[0]),1); //Remove serial column
     var paramsHolder: string = props.map(p => { return this.nextFieldParam(); }).join(','); //$1, $2, $3 so on
     if (this.hasSerial) paramsHolder = 'DEFAULT,' + paramsHolder;
 
+    //The SQL Query is complete. Next is the bindings for the parameters
     var sql: string = `INSERT INTO ${this.tableName} (${columnsList}) VALUES (${paramsHolder})`;
     if (this.hasSerial && DataCommunicator.db.dbEngine === 'postgresql') sql += ` RETURNING ${this.PK[0]}`;
     
-    var params: any[] = props.map(p => { return model[p]; }); //SERIAL prop has been removed above.
+    //THe bindings
+    var params: any[] = props.map(p => { //SERIAL prop has been removed above.
+      if (model.jsonColumns().indexOf(p) !== -1) return JSON.stringify(model[p]);
+      else return model[p];
+    }); 
 
     if (this.hasSerial)
       model[this.PK[0]] = await DataCommunicator.db.insert(sql, params);
@@ -71,7 +78,10 @@ class DataCommunicator<T extends Model> {
       let nextIdx = idx+batchSize;
       let batchRows:any[][] = models.slice(idx, nextIdx).map(m=>{
         let row:any[] = [];
-        for(let p of props) row.push(m[p]);
+        for(let p of props) {
+          if (m.jsonColumns().indexOf(p) !== -1) row.push(JSON.stringify(m[p]));
+          else row.push(m[p]);
+        }
         return row;
       });
       await DataCommunicator.db.multiInsert(sql, batchRows);
@@ -125,8 +135,9 @@ class DataCommunicator<T extends Model> {
     var cols: string[] = [];
     var params: any[] = [];
     for (var i in updates) {
-      cols.push(`${i}=${this.nextFieldParam()}`)
-      params.push(updates[i]);
+      cols.push(`${i}=${this.nextFieldParam()}`);
+      if (model.jsonColumns().indexOf(i) !== -1) params.push(JSON.stringify(updates[i]));
+      else params.push(updates[i]);
     };
 
     var pkfilters: string[] = [];
@@ -161,6 +172,7 @@ class DataCommunicator<T extends Model> {
     var res: T = new this.classOfModel();
 
     res.cloneFrom(dbres);
+    res.jsonParseForMySQL();
     res.fillOldVals();
     return res;
   }
@@ -171,6 +183,7 @@ class DataCommunicator<T extends Model> {
     var res: T = new this.classOfModel();
 
     res.cloneFrom(dbres);
+    res.jsonParseForMySQL();
     res.fillOldVals();
     return res;
   }
@@ -180,6 +193,7 @@ class DataCommunicator<T extends Model> {
     var res: T[] = dbres.map(row => {
       var obj: T = new this.classOfModel();
       obj.cloneFrom(row);
+      obj.jsonParseForMySQL();
       return obj;
     });
     return res;
@@ -189,6 +203,7 @@ class DataCommunicator<T extends Model> {
     var res: T[] = dbres.map(row => {
       var obj: T = new this.classOfModel();
       obj.cloneFrom(row);
+      obj.jsonParseForMySQL();
       return obj;
     });
     return res;

@@ -1,0 +1,16 @@
+Need to update readme for jsonColumns:
+* PostgreSQL users should not care about this
+* The API change might not much, except for MySQL JSON, need to define jsonColumns
+* Need to add example json column
+
+Below were found on notepad++. Need to review:
+
+DataCommunicator:
+add _old check when calling update.
+remove diff of _ props. (do not update _ props)
+remove console logs from delete.
+bugfix for DataCommunicator insert table without PK
+bugfix for DataCommunicator insert multiple calls
+disallow for DataCommunicator delete and update table without PK
+
+TODO: Need to test _properties

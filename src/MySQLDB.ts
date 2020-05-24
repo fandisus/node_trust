@@ -20,7 +20,11 @@ class MySQLDB implements iDBAdapter {
     options.port = port;
     options.timezone = options.timezone || 'local';
     this.connection = mysql.createConnection(options);
-    this.connection.on('error', err=>{ console.log('MySQL Connection error event fired');});
+    this.connection.on('error', err=>{ 
+      console.log('MySQL Connection error event fired');
+      console.log(err);
+      this.connection.end();
+    });
   }
   public nq(s:string) { return this.connection.escape(s); }
   public nqq(s:string) { return `'${this.connection.escape(s)}'`; }

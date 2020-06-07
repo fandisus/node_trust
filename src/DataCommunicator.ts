@@ -118,7 +118,7 @@ class DataCommunicator<T extends Model> {
   }
   public async update(model: T, targets: string[] = [], ignores: string[] = []): Promise<void> {
     if (!this.hasSerial) this.checkPKForUpdate(model);
-    if (model._old === undefined) throw new Error('DataCommunicator unable to check for old values. Please use find to get data before update');
+    if (model._old === undefined) throw new Error('DataCommunicator unable to check for old values. Please use find to or get oldVals');
     var diff: object = Basics.getDiff(model._old, model);
     for (var i in diff) { if (i.startsWith('_')) delete diff[i]; }
     if (Object.keys(diff).length === 0) throw new Error(`${this.tableName} data unchanged`);
@@ -143,7 +143,7 @@ class DataCommunicator<T extends Model> {
     var pkfilters: string[] = [];
     for (var p of this.PK) {
       pkfilters.push(`${p}=${this.nextFieldParam()}`);
-      params.push(model[p]);
+      params.push(model._old[p]);
     }
     sql += cols.join(', ') + ' WHERE ' + pkfilters.join(' AND ');
     await DataCommunicator.db.exec(sql, params);
@@ -188,22 +188,24 @@ class DataCommunicator<T extends Model> {
     return res;
   }
 
-  public async all(cols: string = '*'): Promise<T[]> {
+  public async all(cols: string = '*', withOldVals=false): Promise<T[]> {
     var dbres: any = await DataCommunicator.db.get(`SELECT ${cols} FROM ${this.tableName}`);
     var res: T[] = dbres.map(row => {
       var obj: T = new this.classOfModel();
       obj.cloneFrom(row);
       obj.jsonParseForMySQL();
+      if (withOldVals) obj.fillOldVals();
       return obj;
     });
     return res;
   }
-  public async allPlus(moreQuery:string, cols: string = '*', bindings:any[] = []): Promise<T[]> {
+  public async allPlus(moreQuery:string, cols: string = '*', bindings:any[] = [], withOldVals=false): Promise<T[]> {
     var dbres: any = await DataCommunicator.db.get(`SELECT ${cols} FROM ${this.tableName} ${moreQuery}`, bindings);
     var res: T[] = dbres.map(row => {
       var obj: T = new this.classOfModel();
       obj.cloneFrom(row);
       obj.jsonParseForMySQL();
+      if (withOldVals) obj.fillOldVals();
       return obj;
     });
     return res;

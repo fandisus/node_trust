@@ -16,6 +16,7 @@ Below are some documentations which are ready.
 - [DataCommunicator (generic class)](https://github.com/fandisus/node_trust/blob/master/src/DataCommunicator.md "DataCommunicator (generic class)") Simple class for transfering Model to and from database. 
 - [Files (static class)](https://github.com/fandisus/node_trust/blob/master/src/Files.md "Files (class)") Wrapper for fs-extra and path module.
 - [Basics (static class)](https://github.com/fandisus/node_trust/blob/master/src/Basics.md "Basics (class)") Right now only have static function getDiff to get difference between two objects
-- [Crypter (object)](https://github.com/fandisus/node_trust/blob/master/src/Crypter.md "Crypter (object)") Wrapper for NodeJS crypto module
+- [Crypter (object)](https://github.com/fandisus/node_trust/blob/master/src/Crypter.md "Crypter (object)") Wrapper for NodeJS crypto module.
+- [JSONResponse (object)](https://github.com/fandisus/node_trust/blob/master/src/JSONResponse.md "JSONResponse (object)") Just a simple JSON Object generator, designed to be used as JSON response of POST request.
 
 Other docs are still on the way. Please be patient.

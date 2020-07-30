@@ -1,3 +1,5 @@
+TODO: Test Postgresql JSONB insert and read. Does it need to Stringify?
+
 Need to update readme for jsonColumns:
 * PostgreSQL users should not care about this
 * The API change might not much, except for MySQL JSON, need to define jsonColumns
@@ -14,3 +16,4 @@ bugfix for DataCommunicator insert multiple calls
 disallow for DataCommunicator delete and update table without PK
 
 TODO: Need to test _properties
+

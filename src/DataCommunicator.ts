@@ -58,7 +58,7 @@ class DataCommunicator<T extends Model> {
     var params: any[] = props.map(p => { //SERIAL prop has been removed above.
       if (model.jsonColumns().indexOf(p) !== -1) return JSON.stringify(model[p]);
       else return model[p];
-    }); 
+    });
 
     if (this.hasSerial)
       model[this.PK[0]] = await DataCommunicator.db.insert(sql, params);
@@ -172,7 +172,7 @@ class DataCommunicator<T extends Model> {
     var res: T = new this.classOfModel();
 
     res.cloneFrom(dbres);
-    res.jsonParseForMySQL();
+    if (DataCommunicator.db.dbEngine === 'mysql') res.jsonParseForMySQL();
     res.fillOldVals();
     return res;
   }
@@ -183,7 +183,7 @@ class DataCommunicator<T extends Model> {
     var res: T = new this.classOfModel();
 
     res.cloneFrom(dbres);
-    res.jsonParseForMySQL();
+    if (DataCommunicator.db.dbEngine === 'mysql') res.jsonParseForMySQL();
     res.fillOldVals();
     return res;
   }
@@ -193,7 +193,7 @@ class DataCommunicator<T extends Model> {
     var res: T[] = dbres.map(row => {
       var obj: T = new this.classOfModel();
       obj.cloneFrom(row);
-      obj.jsonParseForMySQL();
+      if (DataCommunicator.db.dbEngine === 'mysql') obj.jsonParseForMySQL();
       if (withOldVals) obj.fillOldVals();
       return obj;
     });
@@ -204,7 +204,7 @@ class DataCommunicator<T extends Model> {
     var res: T[] = dbres.map(row => {
       var obj: T = new this.classOfModel();
       obj.cloneFrom(row);
-      obj.jsonParseForMySQL();
+      if (DataCommunicator.db.dbEngine === 'mysql') obj.jsonParseForMySQL();
       if (withOldVals) obj.fillOldVals();
       return obj;
     });

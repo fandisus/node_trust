@@ -15,7 +15,7 @@ abstract class Model {
   public cloneFrom(obj: any) {
     let props = Object.keys(obj);
     for (var p of props) {
-      if (this[p] === undefined) continue;
+      if (!this.hasOwnProperty(p)) continue;
       if (obj[p]) this[p] = obj[p];
     }
   }

@@ -16,7 +16,7 @@ abstract class Model {
     let props = Object.keys(obj);
     for (var p of props) {
       if (!this.hasOwnProperty(p)) continue;
-      if (obj[p]) this[p] = obj[p];
+      if (p in obj) this[p] = obj[p]; //p in obj  is equal with  obj.hasOwnProperty(p)
     }
   }
 

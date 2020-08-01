@@ -161,6 +161,10 @@ class DataCommunicator<T extends Model> {
     sql += pkFilters.join(' AND ');
     await DataCommunicator.db.exec(sql, params);
   }
+  public async deleteWhere(strWhere: string, bindings:any[]):Promise<void> {
+    let sql:string = `DELETE FROM ${this.tableName} ${strWhere}`;
+    await DataCommunicator.db.exec(sql, bindings);
+  }
 
   public async find(PKs: any[], cols: string = '*'): Promise<T | undefined> {
     var sql: string = `SELECT ${cols} FROM ${this.tableName}`;

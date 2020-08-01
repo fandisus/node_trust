@@ -85,6 +85,11 @@ oSalesman = <Salesman> finder;
 await dcSalesman.delete(oSalesman);
 ```
 
+#### Delete multiple rows
+```javascript
+await dcSalesDetail.deleteWhere('WHERE sales_id=$1',[oSales.id]);
+```
+
 #### Getting count of data
 ```javascript
 let allCount = await dcSalesman.dbCount();
@@ -389,6 +394,11 @@ let tester = async function() {
     `);
     console.log('Content of sales and sales_detail:', data);
 
+    await dcSalesDetail.deleteWhere('WHERE sales_id=$1',[oSales.id]);
+    let data = await DataCommunicator.pg.get(`
+    SELECT * FROM sales LEFT JOIN sales_detail ON sales.id=sales_detail.sales_id
+    `);
+    console.log('Content of sales and sales_detail after delete:', data);
   } catch(e) {
     console.log(e);
   }

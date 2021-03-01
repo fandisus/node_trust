@@ -104,7 +104,7 @@ class MySQLDB implements iDBAdapter {
         await new Promise((reso,reje)=> {
           that.connection.commit((err)=>{
             if (err) { that.connection.rollback(()=>{ reje(err); }) }
-            else { resolve(); reso(); }
+            else { resolve(true); reso(true); }
           });
         }).catch(reject); //This reject is untested.
       });

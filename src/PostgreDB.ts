@@ -91,7 +91,7 @@ class PostgreDB implements iDBAdapter {
         await client.query('BEGIN');
         for (let i:number=0; i<sqls.length; i++) await client.query(sqls[i], params[i]);
         await client.query('COMMIT');
-        resolve();
+        resolve(true);
       } catch (e) {
         await client.query('ROLLBACK');
         reject (e);

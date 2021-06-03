@@ -29,23 +29,25 @@
     "fs-extra": "^10.0.0",
     "lodash": "^4.17.21"
   },
+  "optionalDependencies": {
+    "@types/mysql": "^2.15.18",
+    "@types/pg": "^8.6.0",
+    "@types/pg-format": "^1.0.1",
+    "mysql": "^2.18.1",
+    "pg": "^8.6.0",
+    "pg-format": "^1.0.4"
+  },
   "devDependencies": {
     "@types/fs-extra": "^9.0.11",
     "@types/jest": "^26.0.23",
-    "@types/lodash": "^4.14.169",
-    "@types/mysql": "^2.15.18",
-    "@types/node": "^15.0.3",
-    "@types/pg": "^7.14.11",
-    "@types/pg-format": "^1.0.1",
-    "dotenv": "^9.0.2",
+    "@types/lodash": "^4.14.170",
+    "@types/node": "^15.6.2",
+    "dotenv": "^10.0.0",
     "fs-extra": "^10.0.0",
-    "jest": "^26.6.3",
+    "jest": "^27.0.3",
     "lodash": "^4.17.21",
-    "mysql": "^2.18.1",
-    "pg": "^8.6.0",
-    "pg-format": "^1.0.4",
-    "ts-jest": "^26.5.6",
-    "typescript": "^4.2.4"
+    "ts-jest": "^27.0.2",
+    "typescript": "^4.3.2"
   },
   "comments": [
     "@types/node so that tsc does not say can not find module crypto",

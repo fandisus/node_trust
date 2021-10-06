@@ -1,4 +1,8 @@
 # node_trust
+## Warning
+With appearance of prisma ORM, this module will no longer be maintained.
+
+## Documentation
 Commonly used NodeJS basic functionalities. **Warning** : this library tends to favor PostgreSQL. Especially the `DataCommunicator` and `Model` class.
 
 ### Dependencies
